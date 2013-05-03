@@ -10,10 +10,10 @@ class biocloudcentral::apache (
   $log_dir = $biocloudcentral::config::log_dir
 
   apache::vhost { 'biocloudcentral':
-    port            => '80',
+    port            => $port,
     custom_fragment => template('biocloudcentral/vhost.erb'),
     docroot         => $destination,
-    priority        => 10,
+    priority        => $priority,
   }
 
 }

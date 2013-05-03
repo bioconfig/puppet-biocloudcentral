@@ -10,13 +10,26 @@ describe 'biocloudcentral::apache' do
     let :facts do
       {
         :osfamily               => 'debian',
+        :operatingsystem        => 'Ubuntu',
         :operatingsystemrelease => 'percise',
       }
     end
 
     describe 'with defaults' do
 
-      it { should contain_class('apache') }
+      it { should contain_apache__vhost('biocloudcentral').with({
+        'port' => 80,
+      })}
+
+    end
+
+    describe 'with ssl port' do
+
+      let(:params) { { :port => 443 } }
+
+      it { should contain_apache__vhost('biocloudcentral').with({
+        'port' => 443,
+      })}
 
     end
 
