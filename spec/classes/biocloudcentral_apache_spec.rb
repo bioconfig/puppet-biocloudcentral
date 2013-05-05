@@ -1,37 +1,42 @@
 require 'spec_helper'
 
 describe 'biocloudcentral::apache' do
+  
+  let(:facts) { DEFAULT_CONTEXT }
 
   let :pre_condition do
     'include apache'
   end
 
-  context "on Ubuntu" do
-    let :facts do
-      {
-        :osfamily               => 'debian',
-        :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => 'percise',
-      }
-    end
+  describe 'with defaults' do
 
-    describe 'with defaults' do
+    it { should contain_apache__vhost('biocloudcentral').with({
+      'port' => 80,
+      'ssl'  => false,
+    })}
 
-      it { should contain_apache__vhost('biocloudcentral').with({
-        'port' => 80,
-      })}
+    it { should_not contain_file('/etc/ssl/biocloudcentral.key') }
+  end
 
-    end
+  describe 'with ssl' do
 
-    describe 'with ssl port' do
+    let(:params) { { :port     => 443, 
+                     :ssl_key  => '1234567',
+                     :ssl_cert => 'ABCDEF',
+    } }
 
-      let(:params) { { :port => 443 } }
+    it { should contain_apache__vhost('biocloudcentral').with({
+      'port' => 443,
+      'ssl'  => true,
+    })}
 
-      it { should contain_apache__vhost('biocloudcentral').with({
-        'port' => 443,
-      })}
+    it { should contain_file('/etc/ssl/biocloudcentral.key').with({
+      'content' => '1234567',
+    })}
 
-    end
+    it { should contain_file('/etc/ssl/biocloudcentral.cert').with({
+      'content' => 'ABCDEF',
+    })} 
 
   end
 
